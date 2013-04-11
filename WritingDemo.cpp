@@ -42,6 +42,9 @@
  Code for the Science Channel Demo of :
  Sahai. Griffith. and Stoytchev. ``Interactive Learning of Writing Instruments and Writable Surfaces by a Robot.''
  RSS Manipulation Workshop. 2009
+ 
+ @author: Shane Griffith. June 2009.
+ 
  */
 
 
