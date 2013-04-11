@@ -98,12 +98,9 @@ void conv_img(CvMat * kernel, IplImage *src, IplImage *dst)
 		{
 			for (int j = 0; j < mat->cols; j++)
 			{
-				ve = cvGetReal2D((CvMat*)mat, j, i); //i, j);
+				ve = cvGetReal2D((CvMat*)mat, j, i);
 				cvSetReal2D( dst, j, i, ve );
-				//printf("%.0f, ", ve);
 			}
-			//puts("");
-			//getchar();
 		}
 	}
 
@@ -143,7 +140,6 @@ IplImage * GetImage(CvMat * kernel)
 
 void IntensityFilter(CvMat * kernel, int width, int height)
 {
-	//CvMat * kernel = cvCreateMat(width, height, CV_32FC1);
 
 	for(int i=0; i<kernel->height; i++)
 	{
@@ -152,9 +148,7 @@ void IntensityFilter(CvMat * kernel, int width, int height)
 			CV_MAT_ELEM(*kernel, float, i, j) = 0.0;
 		}
 	}
-	CV_MAT_ELEM(*kernel, float, height/2, width/2) = 2.0;//0.031025;
-
-	//return i_kernel;
+	CV_MAT_ELEM(*kernel, float, height/2, width/2) = 2.0;
 }
 
 void LocalDifferenceFilter(CvMat * kernel, int width, int height)
@@ -178,14 +172,8 @@ void GaborKernel(CvMat * kernel, int width, int height, double Phi, int iNu, dou
 	double dReal;
 	double dTemp1, dTemp2;
 
-	//double Phi = 0;
-	//int iNu = 3;
-	//double Sigma = 2*PI;
-	//double F = sqrt(2.0);
 	double Kmax = PI/2;
 	double K = Kmax / pow(F, (double)iNu);
-
-	//CvMat *gab1_kernel = cvCreateMat( height, width, CV_32FC1);
 
 
 	/**************************** Gabor Function ****************************/ 
@@ -211,10 +199,6 @@ void LoG(CvMat * kernel, int width, int height, double Variance)
 	int x, y;
 	double dTemp;
 	double T_squared = pow(Variance*sqrt(2.0), 2);
-	//CvMat *LoG_kernel = cvCreateMat( height, width, CV_32FC1);
-
-	//double Sigma = 2*PI;
-	//double F = sqrt(2.0);
 
 	/**************************** Gabor Function ****************************/ 
 	for (int i = 0; i < height; i++)
@@ -228,8 +212,6 @@ void LoG(CvMat * kernel, int width, int height, double Variance)
 			cvSetReal2D((CvMat*)kernel, i, j, dTemp);
 		}
 	}
-
-//	return LoG_kernel;
 }
 
 void GetKernel(CvMat * kernel, int knum, int width, int height)
@@ -401,8 +383,6 @@ void Histogram(IplImage * subband, double hist[], int numbins)
 		}
 	}
 
-	//printf("max=%lf, min=%lf\n", max, min); //debugging
-
 	//determine the width of a bin
 	width = (max-min)/numbins;
 
@@ -428,11 +408,7 @@ void Histogram(IplImage * subband, double hist[], int numbins)
 	//normalize to between 0 and 1
 	for(i=0; i<NUM_BINS; i++)
 	{
-		/*printf("hist[%d] = %lf", i, hist[i]);
-		getchar();*/
-		hist[i] /= subband->height*subband->width;//fabs(hist[i]-avg)/128*128; //stdev;
-		/*printf("hist[%d] = %lf", i, hist[i]);
-		getchar();*/
+		hist[i] /= subband->height*subband->width;
 	}
 	
 }
@@ -452,12 +428,10 @@ void GetSpectralHistogram(SPECTRAL_HISTOGRAM * sp, IplImage * img, CvMat * kerne
 		}
 
 		conv_img(kernels[i], img, subband);
-		/*cvShowImage("asdf", subband);
-		cvWaitKey(0);*/
+		
 		Histogram(subband, sp->hist[i], NUM_BINS);
 	}
 
-	//cvDestroyWindow("asdf");
 	cvReleaseImage(&subband);
 }
 
@@ -480,8 +454,6 @@ IplImage * GetResponseImage(SPECTRAL_HISTOGRAM * sp, IplImage * img, CvMat * ker
 		cvWaitKey(0);
 		cvDestroyWindow("a");
 		cvCopy(subband, response, 0);
-		//cvAdd(response, subband, 0);
-		//Histogram(subband, sp->hist[i], NUM_BINS);
 	}
 
 	cvReleaseImage(&subband);
@@ -557,7 +529,7 @@ void SaveComputedSpectralHistograms(char * filename, int num_surfaces, SPECTRAL_
 	char NUM_BUF[500];
 	int i, j, k;
 	
-	sprintf(BUFFER, "");//"%d\n%d\n", num_surfaces, NUM_FILTERS);
+	sprintf(BUFFER, "");
 	writeToFile(filename, BUFFER);
 
 	for(i=0; i<num_surfaces; i++)
@@ -566,8 +538,6 @@ void SaveComputedSpectralHistograms(char * filename, int num_surfaces, SPECTRAL_
 		{
 			for(k=0; k<NUM_BINS; k++)
 			{
-				/*printf("val=%lf\n", interacted_surfaces[i].hist[j][k]);
-				getchar();*/
 				if(j== NUM_FILTERS-1 && k == NUM_BINS-1)
 				{
 					sprintf(NUM_BUF, "%lf\n", interacted_surfaces[i].hist[j][k]);
@@ -688,9 +658,7 @@ void GenerateSpectralHistograms(char * fileLoc, int num_surfaces, SPECTRAL_HISTO
 		printf("File at __%s__ loaded!\n", BUFFER);
 		
 		if(i==0) gray = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
-		//cvCvtColor(img, img, CV_BGR2HSV);
 		cvCvtColor(img, gray, CV_BGR2GRAY);
-		//cvNormalize(gray, gray, 255.0, 0.0, CV_MINMAX, 0);
 		
 		GetSpectralHistogram(&interacted_surfaces[i], gray, kernels);
 	}
@@ -720,16 +688,10 @@ void ShowFilterResponses(char * fileLoc, int num_surfaces, SPECTRAL_HISTOGRAM in
 		printf("File at __%s__ loaded!\n", BUFFER);
 		
 		if(i==0) gray = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
-		//cvCvtColor(img, img, CV_BGR2HSV);
 		cvCvtColor(img, gray, CV_BGR2GRAY);
-		//cvNormalize(gray, gray, 255.0, 0.0, CV_MINMAX, 0);
 		
 		//GetSpectralHistogram(&interacted_surfaces[i], gray, kernels);
 		IplImage * response = GetResponseImage(&interacted_surfaces[i], gray, kernels);
-		/*cvNamedWindow("a", 1);
-		cvShowImage("a", response);
-		cvWaitKey(0);
-		cvDestroyWindow("a");*/
 		cvReleaseImage(&response);
 	}
 
@@ -755,9 +717,7 @@ void CreateSparseCodingImages(char * fileLoc, int num_surfaces, int size)
 		printf("File at __%s__ loaded!\n", BUFFER);
 		
 		if(i==0) gray = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1);
-		//cvCvtColor(img, img, CV_BGR2HSV);
 		cvCvtColor(img, gray, CV_BGR2GRAY);
-		//cvNormalize(gray, gray, 255.0, 0.0, CV_MINMAX, 0);
 
 		cvResize(gray, res, 1);
 		sprintf(str, "D:/school/Vision Research/Code/Sparse Coding/EpiRob Code/cropped_depth_s30/img%d.jpg", i+1);
@@ -807,8 +767,8 @@ int main(int argc, char *argv[])
 	switch(program)
 	{
 	case 0:
-		GenerateSpectralHistograms("C:/Temp/small_surfaces/surface", num_surfaces, interacted_surfaces); //"C:/Temp/surfaces/cropped images/surface"
-		SaveComputedSpectralHistograms("C:/Learning2Write/spectral_histograms.csv", num_surfaces, interacted_surfaces); //"C:/Temp/small_surfaces/spectral.csv"
+		GenerateSpectralHistograms("C:/Temp/small_surfaces/surface", num_surfaces, interacted_surfaces);
+		SaveComputedSpectralHistograms("C:/Learning/spectral_histograms.csv", num_surfaces, interacted_surfaces);
 		break;
 	case 1:
 		ShowFilterResponses("C:/Temp/small_surfaces/surface", num_surfaces, interacted_surfaces);
@@ -822,41 +782,6 @@ int main(int argc, char *argv[])
 	default:
 		break;
 	}
-
-	//IplImage * img;
-	//IplImage * gray;
-	//IplImage *reimg;
-	//IplImage * kimg;
-
-	//int i;
-
-	//img = cvLoadImage("shaneg.jpg", 1);
-	//gray = cvCreateImage(cvSize(img->width, img->height), img->depth, 1);
-	//reimg = cvCreateImage(cvSize(img->width,img->height), IPL_DEPTH_8U, 1);
-	//cvCvtColor(img, gray, CV_BGR2GRAY);
-
-	//cvNamedWindow("Kernel", CV_WINDOW_AUTOSIZE);
-	//cvNamedWindow("Filtered Image", CV_WINDOW_AUTOSIZE);
-	//for(i=0; i<NUM_FILTERS; i++)
-	//{
-	//	CvMat * kernel = GetKernel(i, 35, 35);
-	//	if(kernel == NULL) continue;
-	//	kimg = GetImage(kernel);
-	//	conv_img(kernel, gray, reimg);
-
-
-	//	cvShowImage("Kernel", kimg);
-	//	cvShowImage("Filtered Image", reimg);
-	//	
-	//	cvWaitKey(0);
-	//	cvReleaseImage(&kimg);
-	//	cvReleaseMat(&kernel);
-	//}
-
-	//cvDestroyWindow("Kernel");
-	//cvDestroyWindow("Filtered Image");
-
-
 	
 	return 0;
 }
